@@ -10,7 +10,6 @@ DMX512Output = dmx512_ns.class_('DMX512Output', output.FloatOutput, cg.Component
 
 CONF_CHANNEL = 'channel'
 CONF_UNIVERSE_ID = 'universe'
-CONF_DOUBLE_CHANNEL = 'double_channel'
 
 def validate_channel(channel):
     if(channel >= 1 and channel <= 512):
@@ -22,7 +21,6 @@ CONFIG_SCHEMA = output.FLOAT_OUTPUT_SCHEMA.extend({
     cv.Required(CONF_ID): cv.declare_id(DMX512Output),
     cv.Required(CONF_CHANNEL): cv.int_range(min=1, max=512),
     cv.GenerateID(CONF_UNIVERSE_ID): cv.use_id(dmx512.DMX512),
-    cv.Optional(CONF_DOUBLE_CHANNEL, default=False): cv.boolean,
 }).extend(cv.COMPONENT_SCHEMA)
 
 
@@ -30,8 +28,7 @@ def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     yield cg.register_component(var, config)
     yield output.register_output(var, config)
-
+    
     dmx = yield cg.get_variable(config[CONF_UNIVERSE_ID])
     cg.add(var.set_universe(dmx))
     cg.add(var.set_channel(config[CONF_CHANNEL]))
-    cg.add(var.set_double_channel(config[CONF_DOUBLE_CHANNEL]))
